@@ -14,17 +14,6 @@
     <org.slf4j-version>1.7.36</org.slf4j-version>
   </properties>
   
-  <!-- 
-    Maven Project
-    1. pom.xml 에 등록된 <dependency> 태그에 의해 필요한 라이브러리(jar)가 다운로드 된다.
-    2. c:\Users\계정명\.m2 디렉터리에 라이브러리가 저장되어 있다.
-    3. 라이브러리에 문제가 발생하면 아래 순서로 해결한다.
-      1) Spring Tool Suite 을 끈다.
-      2) C:\Users\계정명\.m2 디렉터리를 지운다.
-      3) Spring Tool Suite 를 켠다. (이 때 모두 다시 다운로드 된다.)
-      4) 프로젝트 우클릭 메뉴 - [Update Project] 를 선택한다.
-   -->
-  
   <dependencies>
   
     <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -152,7 +141,7 @@
   </dependencies>
   <build>
     <!-- deploy file (배포 파일) 이름 바꾸기 -->
-    <finalName>prj</finalName>
+    <finalName>prj02</finalName>
       <plugins>
           <plugin>
             <artifactId>maven-eclipse-plugin</artifactId>

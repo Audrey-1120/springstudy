@@ -15,6 +15,7 @@
 	</listener>
 
 	<!-- Processes application requests -->
+  <!-- view - DispatcherServlet - Controller -->
 	<servlet>
 		<servlet-name>appServlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
