@@ -30,7 +30,6 @@ public class ContactController {
     return "contact/detail";
     // 번호를 바로 받아오는 requestParam사용하면 좋을듯.
     
-    
   }
   
 }

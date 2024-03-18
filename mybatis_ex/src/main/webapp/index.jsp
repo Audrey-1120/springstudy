@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <a href="${contextPath}/board/manage.brd">학생관리</a>
+  <a href="${contextPath}/board/list.do">학생관리</a>
 
 </body>
 </html>
