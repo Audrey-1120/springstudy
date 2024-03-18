@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- Appenders -->
+  
+  <!-- Console view 에 로그를 찍는 Appender -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[%d{HH:mm:ss.SSS, Asia/Seoul}]%-5level:%logger-%msg%n</pattern>
+      <!-- 로그레벨 : 최대 5자리로 왼쪽정렬. -->
+    </encoder>
+	</appender>
+	
+	<!-- Application Loggers -->
+  <!-- 프로젝트에서 어떤 수준의 로그를 남길것인가? -->
+  <!-- 에러가 발생했을 때 or warning이 발생했을때 or 기본적인 동작 수행할 때 등... -->
+	<logger name="com.gdu.prj05">
+		<level value="info" />
+    <!-- 기본값은 info임. -->
+	</logger>
+	
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework">
+		<level value="info" />
+	</logger>
+
+	<!-- Root Logger -->
+	<root>
+		<priority value="warn" />
+		<appender-ref ref="console" />
+	</root>
+  
+  
+</configuration>
