@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -30,10 +31,14 @@ import lombok.RequiredArgsConstructor;
 
 @ContextConfiguration(locations="file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml")
 
-@RequiredArgsConstructor
 public class ContactUnitTest {
   
-  private final ContactDao contactDao;
+  private ContactDao contactDao;
+
+  @Autowired
+  public void setContactDao(ContactDao contactDao) {
+    this.contactDao = contactDao;
+  }
 
   @Test
   public void 등록테스트() {
