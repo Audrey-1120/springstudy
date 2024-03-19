@@ -21,13 +21,7 @@ public class StudentController extends HttpServlet {
     String contextPath = request.getContextPath();
     String urlMapping = requestURI.substring(requestURI.indexOf(contextPath) + contextPath.length());
 	    
-    ActionForward actionForward = null;
-	    
-    switch(urlMapping) {
-    case "/student/list.do":
-      actionForward = studentService.getStudentList(request);
-      break;
-    }
+    
 	  
 	}
 

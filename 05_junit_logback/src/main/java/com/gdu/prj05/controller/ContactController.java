@@ -17,7 +17,9 @@ import com.gdu.prj05.service.ContactService;
 
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequestMapping(value="/contact")
 @RequiredArgsConstructor
 @Controller
@@ -25,7 +27,7 @@ public class ContactController {
 
   private final ContactService contactService;
   
-  private static final Logger log = LoggerFactory.getLogger(ContactController.class); // ContactController 가 동작할 때 로그를 찍는 log
+  // private static final Logger log = LoggerFactory.getLogger(ContactController.class); // ContactController 가 동작할 때 로그를 찍는 log
 
   @GetMapping(value="/list.do")
   public String list(HttpServletRequest request, Model model) {
