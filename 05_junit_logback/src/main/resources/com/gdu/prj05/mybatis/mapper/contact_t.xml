@@ -53,10 +53,10 @@
       , #{mobile}
       , #{email}
       , #{address}
-      , TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD HH24:MI:SS') <!-- 문자열로 저장해야 한다! -->
+      , TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD HH24:MI:SS')
     )
   </insert>
-  
+
   <update id="modifyContact"
           parameterType="ContactDto">
     UPDATE CONTACT_T
@@ -66,9 +66,8 @@
          , ADDRESS = #{address}
      WHERE CONTACT_NO = #{contactNo}
   </update>
-  
-  <delete id="removeContact"
-          parameterType="int">
+
+  <delete id="removeContact">
     DELETE
       FROM CONTACT_T
      WHERE CONTACT_NO = #{contactNo}
@@ -80,13 +79,12 @@
       FROM CONTACT_T
      ORDER BY CONTACT_NO DESC
   </select>
-  
+
   <select id="getContactByNo"
           resultType="ContactDto">
     SELECT CONTACT_NO, NAME, MOBILE, EMAIL, ADDRESS, CREATED_AT
       FROM CONTACT_T
      WHERE CONTACT_NO = #{contactNo}
-  
   </select>
 
 </mapper>

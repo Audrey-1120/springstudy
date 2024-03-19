@@ -24,8 +24,8 @@ public class StudentController extends HttpServlet {
     ActionForward actionForward = null;
 	    
     switch(urlMapping) {
-    case "/board/list.do":
-      actionForward = boardService.getBoardList(request);
+    case "/student/list.do":
+      actionForward = studentService.getStudentList(request);
       break;
     }
 	  

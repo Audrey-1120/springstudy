@@ -14,7 +14,6 @@ public class StudentDto {
   private String name;
   private int kor;
   private int eng;
-  private int mat;
-  
+  private int mat;  
   
 }

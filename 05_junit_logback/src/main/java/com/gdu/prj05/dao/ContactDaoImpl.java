@@ -10,12 +10,11 @@ import com.gdu.prj05.dto.ContactDto;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Repository
-public class contactDaoImpl implements ContactDao {
+public class ContactDaoImpl implements ContactDao {
   
   private final SqlSessionTemplate sqlSessionTemplate; // 모든 메소드에서 쿼리를 실행할때 사용한다.
   
-  public final static String NS = "com.gdu.prj05.mybatis.mapper.contact_t.xml";
+  public final static String NS = "com.gdu.prj05.mybatis.mapper.contact_t.";
   
   // Spring Container에 만들어진 bean을 가져오면 된다.
   // 우리가 선택한 방법 - final + 생성자 주입.
