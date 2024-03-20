@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class ContactServiceIpml implements ContactService {
+public class ContactServiceImpl implements ContactService {
   
   // 서비스에서 request나 response를 직접 선언할 수는 없다. 
   // 무조건 전달 받아야한다.
