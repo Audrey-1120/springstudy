@@ -72,5 +72,11 @@ public class ContactController {
     contactService.modifyContact(request, response);
   }
   
+  @GetMapping(value="/tx/test.do")
+  public String txTest() {
+    contactService.txTest();
+    return "redirect:/contact/list.do";
+  }
+  
   
 }
