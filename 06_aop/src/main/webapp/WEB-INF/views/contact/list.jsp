@@ -58,7 +58,7 @@
     $('.btn-remove').on('click', (evt) => {
     	if(confirm('연락처를 삭제할까요?')) {
     		const contactNo = $(evt.target).prev().data('contactNo');
-    	  location.href = '${contextPath}/contact/remove.do?contact_no=' + contactNo;	
+    	  location.href = '${contextPath}/contact/remove.do?contact-no=' + contactNo;	
     	}
     	// prev() - 삭제 이전 버튼. 상세보기의 dataset 이용하기
     })
