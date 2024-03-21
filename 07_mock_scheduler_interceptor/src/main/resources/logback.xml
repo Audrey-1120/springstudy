@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- Appenders -->
+  
+  <!-- Console view 에 로그를 찍는 Appender -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[%d{HH:mm:ss.SSS, Asia/Seoul}]%-5level:%logger-%msg%n</pattern>
+      <!-- 로그레벨 : 최대 5자리로 왼쪽정렬. -->
+    </encoder>
+	</appender>
+  
+  <!-- File 에 로그를 찍는 Appender -->
+  <appender name="file" class="ch.qos.logback.core.FileAppender">
+    <file>/logs/prj05.log</file>
+    <append>true</append>
+    <immediateFlush>true</immediateFlush>
+    <encoder>
+      <pattern>[%d{HH:mm:ss.SSS, Asia/Seoul}]%-5level:%logger-%msg%n</pattern>
+      <!-- 로그레벨 : 최대 5자리로 왼쪽정렬. -->
+    </encoder>
+  </appender>
+  
+  <!-- 매일 새로운 파일을 만드는 Appender -->
+  <appender name="rolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>/logs/prj06-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <!-- 파일이 분리될때 인덱스에 의해서 파일이름 구분이 가능해짐. -->
+      <maxFileSize>10MB</maxFileSize> <!-- 최대크기 -->
+      <totalSizeCap>100GB</totalSizeCap>
+      <maxHistory>30</maxHistory> <!-- 파일 언제까지 가지고 있을건지? (한달)-->
+    </rollingPolicy>
+    <file>/logs/prj06.log</file>
+    <append>true</append>
+    <immediateFlush>true</immediateFlush>
+    <encoder>
+      <pattern>[%d{HH:mm:ss.SSS, Asia/Seoul}]%-5level:%logger-%msg%n</pattern>
+      <!-- 로그레벨 : 최대 5자리로 왼쪽정렬. -->
+    </encoder>
+  </appender>
+  
+	
+	<!-- Application Loggers -->
+  <!-- 프로젝트에서 어떤 수준의 로그를 남길것인가? -->
+  <!-- 에러가 발생했을 때 or warning이 발생했을때 or 기본적인 동작 수행할 때 등... -->
+	<logger name="com.gdu" level="info"/>
+    <!-- 기본값은 info임. -->
+	
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework" level="info"/>
+  <logger name="com.zaxxer.hikari"   level="info"/>
+  <logger name="org.mybatis.spring"  level="info"/>
+  <logger name="jdbc.sqltiming"      level="info"/>  <!-- 쿼리문 + 실행시간 -->
+  <logger name="jdbc.sqlonly"        level="off"/>   <!-- 쿼리문 -->
+  <logger name="jdbc.connection"     level="off"/>   <!-- Connection 호출 정보 -->
+  <logger name="jdbc.audit"          level="off"/>   <!-- JDBC 호출 정보 -->
+  <logger name="jdbc.resultset"      level="off"/>   <!-- ResultSet 호출 정보 -->
+  <logger name="jdbc.resultsettable" level="off"/>   <!-- ResultSet 호출 결과 테이블 -->
+  <logger name="log4jdbc.debug"      level="off"/>   <!-- log4jdbc 라이브러리 동작 -->
+  
+  
+
+	<!-- Root Logger -->
+	<root>
+		<priority value="warn" />
+		<appender-ref ref="console" />
+    <!-- 아래 두줄 빼면 파일 로그 저장안됨. -->
+    <appender-ref ref="file" />
+    <appender-ref ref="rolling" />
+	</root>
+  
+  
+</configuration>
