@@ -52,9 +52,8 @@ public class ContactController {
   //서비스에게 전달해주는 것 두가지가 파라미터.
   @PostMapping(value="/register.do")
   public void register(HttpServletRequest request
-                     , HttpServletResponse response
-                     , RedirectAttributes redirectAttributes) {
-    contactService.registerContact(request, response, redirectAttributes);
+                     , HttpServletResponse response) {
+    contactService.registerContact(request, response);
   }
   
   // 삭제

@@ -11,7 +11,7 @@ import com.gdu.prj07.dto.ContactDto;
 
 public interface ContactService {
 
-  void registerContact(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes);
+  void registerContact(HttpServletRequest request, HttpServletResponse response);
   void modifyContact(HttpServletRequest request, HttpServletResponse response);
   void removeContact(HttpServletRequest request, HttpServletResponse response);
   List<ContactDto> getContactList();

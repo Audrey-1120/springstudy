@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 // 로그
 @Slf4j
 
+// @ContextConfiguration + @WebApplicationContext
+@SpringJUnitWebConfig(locations= {"file:src/main/webapp/WEB-INF/spring/root-context.xml"})
 public class ContactMockTest {
 
   @Autowired
