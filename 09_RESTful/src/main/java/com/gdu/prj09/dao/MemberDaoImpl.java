@@ -1,10 +1,13 @@
 package com.gdu.prj09.dao;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.dao.DuplicateKeyException;
 
+import com.gdu.prj09.dto.AddressDto;
 import com.gdu.prj09.dto.MemberDto;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,12 @@ public class MemberDaoImpl implements MemberDao {
     return sqlSessionTemplate.insert(NS + "insertMember", member);
   }
 
+  @Override
+  public int insertAddress(AddressDto address) {
+    return sqlSessionTemplate.insert(NS + "", address);
+  }
+  
+  
   @Override
   public int updateMember(MemberDto member) {
     // TODO Auto-generated method stub
@@ -56,5 +65,8 @@ public class MemberDaoImpl implements MemberDao {
     // TODO Auto-generated method stub
     return null;
   }
+
+
+
 
 }

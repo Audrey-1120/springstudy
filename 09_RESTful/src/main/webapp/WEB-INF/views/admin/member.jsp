@@ -122,7 +122,7 @@
     
       // jQuery 객체 선언
       var email = $('#email');
-      var mname = $('#name');
+      var mName = $('#name');
       var gender = $('input[type=radio][name=gender]')
       var zonecode = $('#zonecode');
       var address = $('#address');
@@ -138,7 +138,7 @@
       // 초기화 함수
       const fnInit = () => {
     	  email.val(''); // 이메일과 이름에 입력된 값 빈문자열로 바꿈.
-    	  mname.val('');
+    	  mName.val('');
     	  $('#none').prop('checked', true);
     	  // $('#none').attr('checked', 'checked'); // attribute로 메소드 사용 시 <input checked="checked">
     	  zonecode.val('');
@@ -156,7 +156,7 @@
     		  contentType: 'application/json', // 보내는 데이터 타입
     		  data: JSON.stringify({           // 보내는 데이터 (문자열 형식의 JSON 데이터)
     			  'email': email.val(), // 이메일 란에 입력된 것.
-    			  'name': mname.val(),
+    			  'name': mName.val(),
     			  'gender': $(':radio:checked').val(),
     			  'zonecode': zonecode.val(),
     			  'address': address.val(),
@@ -166,11 +166,14 @@
     		  // 위의 요청의 본문(data: ~) 에 데이터를 실어서 controller가 받는다.
     		  // 응답
     		  dataType: 'json'    // 받는 데이터 타입
-    	  }).done(resData=>{
-    		  console.log(resData);
+    	  }).done(resData=>{    // resData = {"insertCount" : 2} 실패했다면 0
+    		  if(resData.insertCount === 2) {
+    			  alert('정상적으로 등록되었습니다.');
+    			  fnInit();
+    		  } 
     	  }).fail(jqXHR=>{
     		  // unique 관련된 오류는 이곳으로 넘어옴.
-    		  console.lod(jqXHR);
+    		  alert(jqXHR.responseText);
     	  })
       }
 

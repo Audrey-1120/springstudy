@@ -15,6 +15,6 @@ public class AddressDto {
   private String address;
   private String detailAddress;
   private String extraAddress;
-  private int memberNo;
+  private MemberDto member;
 
 }

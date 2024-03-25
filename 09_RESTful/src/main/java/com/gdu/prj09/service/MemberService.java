@@ -12,7 +12,7 @@ public interface MemberService {
   
   ResponseEntity<Map<String, Object>> getMembers(int page, int display);
   ResponseEntity<MemberDto> getMemberByNo(int memberNo);
-  ResponseEntity<Map<String, Object>> registerMember(MemberDto member, HttpServletResponse response); // response는 catch 블록에 예외 발생했을 때 응답보내는 용도!
+  ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map, HttpServletResponse response); // response는 catch 블록에 예외 발생했을 때 응답보내는 용도!
   ResponseEntity<Map<String, Object>> modifyMember(MemberDto member);
   ResponseEntity<Map<String, Object>> removeMember(int memberNo);
   ResponseEntity<Map<String, Object>> removeMembers(String memberNoList);

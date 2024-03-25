@@ -1,13 +1,18 @@
 package com.gdu.prj09.dao;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DuplicateKeyException;
+
+import com.gdu.prj09.dto.AddressDto;
 import com.gdu.prj09.dto.MemberDto;
 
 public interface MemberDao {
   
   int insertMember(MemberDto member);
+  int insertAddress(AddressDto address);
   int updateMember(MemberDto member);
   
   // 두 삭제는 하나의 서비스로 구성해야하는가? 
