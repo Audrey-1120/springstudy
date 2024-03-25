@@ -38,9 +38,25 @@
           scope="singleton">
       <constructor-arg ref="sqlSessionTemplate"/>
     </bean>
-    <!-- 생성자 - sqlSessionTemplate을 주입받고 있다. -->
-    <!-- 생성자의 필드값으로 sqlSessionTemplate가 들어가 있어야 함. -->
     
+    <bean class="com.gdu.prj09.utils.MyPageUtils"
+          id="myPageUtils"
+          scope="singleton">
+    </bean>
+    <!-- MyPageUtils에서 pagePerBlock은 고정값이므로 전달 가능 -->
+    <!-- 그러나 지금 MyPageUtils에는 Setter가 없다. 그러므로 안됨. -->
+    <!-- - property는 setter를 기반으로 동작하기 때문! -->    
+    
+    <bean class="com.gdu.prj09.service.MemberServiceImpl"
+          id="memberService"
+          scope="singleton">
+      <constructor-arg ref="memberDao"/>
+      <constructor-arg ref="myPageUtils"/>
+    </bean>
+    
+    <!-- 오류가 나는 이유 - service는 생성자를 호출하게끔 되어있음.(@RequiredConstructor) -->
+    <!-- 그러므로 constructor-arg를 사용해서 생성자 호출 -->
+    <!-- Memberservice의 필드, memberDao와 myPAgeUtils. -->
 
     
     

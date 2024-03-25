@@ -12,12 +12,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberDaoImpl implements MemberDao {
 
-  private final SqlSessionTemplate sessionTemplate;
+  private final SqlSessionTemplate sqlSessionTemplate;
+  
+  public final static String NS = "com.gdu.prj09.mybatis.mapper.member_t.";
   
   @Override
   public int insertMember(MemberDto member) {
-    // TODO Auto-generated method stub
-    return 0;
+    return sqlSessionTemplate.insert(NS + "insertMember", member);
   }
 
   @Override
