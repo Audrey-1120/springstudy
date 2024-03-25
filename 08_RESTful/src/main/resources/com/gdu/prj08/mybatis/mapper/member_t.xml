@@ -2,29 +2,41 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="com.gdu.prj08.mybatis.mapper.file_t">
-
+  
   <insert id="insertHistory"
           parameterType="HistoryDto">
-    <selectKey keyProperty="historyNo" resultType="int" order="BEFORE">
-      SELECT HISTORY_SEQ.NEXTVAL
+    <selectKey keyProperty="historyNo" order="BEFORE"> <!-- HistoryDto에 있는 historyNo를 먼저 selectKey 안에 있는 쿼리문을 실행해라 -->
+      SELECT HISTORY_SQL.NEXTVAL
         FROM DUAL
     </selectKey>
-    INSERT INTO HISTORY_T (
+    INSERT INTO HISTORY_T () VALUES (
         HISTORY_NO
       , WRITER
       , IP
     ) VALUES (
+        <!-- 원래는 이곳이 seq값을 넣는 자리. -->
         #{historyNo}
       , #{writer}
       , #{ip}
     )
+          
   </insert>
   
-  <insert id="insertFile"
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <insert id="uploadFile"
           parameterType="FileDto">
-    INSERT INTO FILE_T(
+    INSERT INTO FILE_T (
         FILE_NO
       , UPLOAD_PATH
       , ORIGINAL_FILENAME
@@ -33,10 +45,10 @@
     ) VALUES (
         FILE_SEQ.NEXTVAL
       , #{uploadPath}
-      , #{originalFilename}
+      , #{originalFileName}
       , #{filesystemName}
       , #{historyNo}
     )
   </insert>
-  
+
 </mapper>

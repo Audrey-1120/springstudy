@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.gdu.prj08.dto.FileDto;
+import com.gdu.prj08.dto.HistoryDto;
 import com.gdu.prj08.utils.MyFileUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,15 @@ public class FileDaoImpl implements FileDao {
 
   private final SqlSessionTemplate sqlSessionTemplate;
   
-  public final static String NS = "com.gdu.prj08.mybatis.mapper.file_t.";
   
   @Override
-  public int upload1(FileDto fileDto) {
-    int insertCount = sqlSessionTemplate.insert(NS + "registerFile", fileDto);
-    return insertCount;
+  public int insertHistory(HistoryDto history) {
+    return sqlSessionTemplate.insert("com.gdu.prj08.mybatis.mapper.file_t.insertHistory", history);
   }
 
   @Override
-  public int upload2(FileDto fileDto) {
-    int insertCount = sqlSessionTemplate.insert(NS + "registerFile", fileDto);
-    return insertCount;
+  public int insertFile(FileDto file) {
+    return sqlSessionTemplate.insert("com.gdu.prj08.mybatis.mapper.file_t.insertFile", file);
   }
   
 }
