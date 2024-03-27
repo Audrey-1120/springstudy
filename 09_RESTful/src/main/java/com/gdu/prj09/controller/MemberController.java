@@ -1,14 +1,18 @@
 package com.gdu.prj09.controller;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.gdu.prj09.dto.AddressDto;
@@ -32,7 +36,7 @@ import lombok.RequiredArgsConstructor;
  *   2) 상세   | /members/1                  | GET 
  *   3) 삽입   | /members                    | POST
  *   4) 수정   | /members                    | PUT
- *   5) 삭제   | /members/1                  | DELETE
+ *   5) 삭제   | /member/1                   | DELETE
  *             | /members/1,2,3              |
  *   
  *   삽입의 경우, 주소가 아닌 본문에 포함시켜서 보낸다. - POST
@@ -50,32 +54,46 @@ public class MemberController {
   private final MemberService memberService;
   
   @GetMapping("/admin/member.do")
-  public void adminMember() {
-    // 반환타입이 void인 경우 주소를 JSP 경로로 인식한다.
-    // /admin/member.do ====> /WEB-INF/views/admin/member.jsp
-  }
+  public void adminMember() {}
   
-  /*
-   *  @RequestBody - 요청 본문. 클라이언트에서 보낸 데이터는 요청 본문에 포함됨.
-   *  fetch에서는 본문 이름자체가 body임.
-   */
   
-  @PostMapping(value = "/members", produces="application/json")
+  @PostMapping(value="/members", produces="application/json")
   public ResponseEntity<Map<String, Object>> registerMember(@RequestBody Map<String, Object> map
-                                                           , HttpServletResponse response) {
+                                                          , HttpServletResponse response) {
     return memberService.registerMember(map, response);
-
-    // 요청 본문에서 보낸 데이터는 섞여 있다.
-    // 그러나 Dto 2개로 json데이터를 찢어서 받을 수 없다..
-    // 1) 보낸 데이터를 한꺼번에 받을 수 있는 우리가 알고 있는 Dto는 없다.. -> Dto를 새로 만들어서 받아야 한다.
-    // 2) Dto가 안된다면? Map으로 받을 수 있다.
-    
   }
   
+  @GetMapping(value="/members/page/{p}/display/{dp}", produces="application/json")
+  public ResponseEntity<Map<String, Object>> getMembers(@PathVariable(value="p", required=false) Optional<String> optPage
+                                                      , @PathVariable(value="dp", required=false) Optional<String> optDisplay) {
+    int page = Integer.parseInt(optPage.orElse("1"));
+    int display = Integer.parseInt(optDisplay.orElse("20"));
+    return memberService.getMembers(page, display);
+  }
   
+  @GetMapping(value="/members/{memberNo}", produces="application/json")
+  public ResponseEntity<Map<String, Object>> getMemberByNo(@PathVariable(value="memberNo", required=false) Optional<String> opt) {
+    int memberNo = Integer.parseInt(opt.orElse("0"));
+    return memberService.getMemberByNo(memberNo);
+  }
   
+  // jsp가 전달하는 json 데이터는 body에 포함되어 있음.
+  // 
+  @PutMapping(value="/members", produces="application/json")
+  public ResponseEntity<Map<String, Object>> modifyMember(@RequestBody Map<String, Object> map) {
+    return memberService.modifyMember(map);
+  }
   
+  @DeleteMapping(value="/member/{memberNo}", produces="application/json")
+  public ResponseEntity<Map<String, Object>> removeMember(@PathVariable(value="memberNo", required=false)Optional<String> opt) {
+    int memberNo = Integer.parseInt(opt.orElse("0"));
+    return memberService.removeMember(memberNo);
+  }
   
+  @DeleteMapping(value="/members/{memberNoList}", produces="application/json")
+  public ResponseEntity<Map<String, Object>> removeMembers(@PathVariable(value="memberNoList", required=false) Optional<String> opt) {
+    return memberService.removeMembers(opt.orElse("0"));
+  }
   
   
 }

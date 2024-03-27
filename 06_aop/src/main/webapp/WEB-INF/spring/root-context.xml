@@ -60,7 +60,7 @@
       <!-- 어떤 메소드에 트랜잭션을 걸어줄것이니? -->
       <!-- 일단 모두! 선택해놓고 나중에 제외시키는 방식으로 진행 -->
       <tx:method name="*"/>
-      <tx:method name="get*" read-only="true"/>
+      <tx:method name="get*" read-only="true"/> 
       <!-- read-only : 읽기 전용 메소드. dB가 변하지 않는 메소드이므로 트랜잭션이 불필요하게 개입해서 나타날 수 있는 성능 저하를 막음. -->
       <!-- SELECT의 경우, 트랜잭션이 개입할 여지가 없음. -> 굳이? 갈필요 없다.  -->
     </tx:attributes>

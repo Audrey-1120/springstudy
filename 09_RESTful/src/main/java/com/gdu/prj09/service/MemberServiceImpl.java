@@ -1,7 +1,8 @@
 package com.gdu.prj09.service;
 
 import java.io.PrintWriter;
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,55 +21,82 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
-  
   private final MemberDao memberDao;
   private final MyPageUtils myPageUtils;
- 
-
+  
   @Override
   public ResponseEntity<Map<String, Object>> getMembers(int page, int display) {
-    return null;
+    
+    int total = memberDao.getTotalMemberCount();
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    Map<String, Object> params = Map.of("begin", myPageUtils.getBegin()
+                                      , "end", myPageUtils.getEnd());
+    
+    List<AddressDto> members = memberDao.getMemberList(params);
+    
+    return new ResponseEntity<Map<String,Object>>(Map.of("members", members
+                                                       , "total", total
+                                                       , "paging", myPageUtils.getAsyncPaging())
+                                                , HttpStatus.OK);
+    
   }
 
   @Override
-  public ResponseEntity<MemberDto> getMemberByNo(int memberNo) {
-    // TODO Auto-generated method stub
-    return null;
+  public ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo) {
+    
+    int total = memberDao.getTotalAddressCountByNo(memberNo);
+    int page = 1;
+    int display = 20;
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    Map<String, Object> params = Map.of("memberNo", memberNo
+                                      , "begin", myPageUtils.getBegin()
+                                      , "end", myPageUtils.getEnd());
+    
+    List<AddressDto> addressList = memberDao.getAddressListByNo(params);
+    MemberDto member = memberDao.getMemberByNo(memberNo);
+    
+    return new ResponseEntity<Map<String,Object>>(Map.of("addressList", addressList
+                                                       , "member", member)
+                                                , HttpStatus.OK);
+    
   }
 
   @Override
-  public ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map, HttpServletResponse response) {
-
+  public ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map
+                                                          , HttpServletResponse response) {
+    
     ResponseEntity<Map<String, Object>> result = null;
     
     try {
       
       MemberDto member = MemberDto.builder()
-          .email((String)map.get("email")) // map의 데이터는 모두 object이므로 형변환
-          .name((String)map.get("name"))
-          .gender((String)map.get("gender"))
-          .build();
+                          .email((String)map.get("email"))
+                          .name((String)map.get("name"))
+                          .gender((String)map.get("gender"))
+                         .build();
       
-      int insertCount = memberDao.insertMember(member); // 여기에 memberNo도 저장이 되어 있음.
+      int insertCount = memberDao.insertMember(member);
       
       AddressDto address = AddressDto.builder()
-            .zonecode((String)map.get("zonecode"))
-            .address((String)map.get("address"))
-            .detailAddress((String)map.get("detailAddress"))
-            .extraAddress((String)map.get("extraAddress"))
-            .member(member)
-          .build();
-      
-      insertCount += memberDao.insertAddress(address); // insertCount에 누적시킴.
-      
+                            .zonecode((String)map.get("zonecode"))
+                            .address((String)map.get("address"))
+                            .detailAddress((String)map.get("detailAddress"))
+                            .extraAddress((String)map.get("extraAddress"))
+                            .member(member)
+                           .build();
+                                
+      insertCount += memberDao.insertAddress(address);
       
       result = new ResponseEntity<Map<String,Object>>(
                       Map.of("insertCount", insertCount),
                       HttpStatus.OK);
       
-    } catch (DuplicateKeyException e) { // catch(Exception e) { 이름 확인 : e.getClass().getName(); }
-      e.getClass().getName();
-      
+    } catch (DuplicateKeyException e) {  // catch(Exception e) { 이름 확인 : e.getClass().getName() }
+            
       try {
         
         response.setContentType("text/plain");
@@ -80,29 +108,47 @@ public class MemberServiceImpl implements MemberService {
       } catch (Exception e2) {
         e.printStackTrace();
       }
-      
     }
-
     return result;
-    
   }
-
+  
+  // 수정
   @Override
-  public ResponseEntity<Map<String, Object>> modifyMember(MemberDto member) {
-    // TODO Auto-generated method stub
-    return null;
+  public ResponseEntity<Map<String, Object>> modifyMember(Map<String, Object> map) {
+    
+    int updateMemberCount = memberDao.updateMember(map);
+    int updateAddressCount = memberDao.updateAddress(map);
+    
+    if(updateAddressCount == 0) {
+      
+      AddressDto address = AddressDto.builder()
+                              .zonecode((String)map.get("zonecode"))
+                              .address((String)map.get("address"))
+                              .detailAddress((String)map.get("detailAddress"))
+                              .extraAddress((String)map.get("extraAddress"))
+                              .member(MemberDto.builder()
+                                          .memberNo(Integer.parseInt((String)map.get("memberNo")))
+                                        .build())
+                             .build();
+      
+      updateAddressCount = memberDao.insertAddress(address);
+      
+    } 
+    return new ResponseEntity<Map<String,Object>>(Map.of("updateCount", updateAddressCount + updateMemberCount)
+                                                , HttpStatus.OK);
   }
 
+  // 삭제
   @Override
   public ResponseEntity<Map<String, Object>> removeMember(int memberNo) {
-    // TODO Auto-generated method stub
-    return null;
+    return new ResponseEntity<Map<String,Object>>(Map.of("deleteCount", memberDao.deleteMember(memberNo))
+                                                , HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<Map<String, Object>> removeMembers(String memberNoList) {
-    // TODO Auto-generated method stub
-    return null;
+  public ResponseEntity<Map<String, Object>> removeMembers(String memberNoList) { // 0이 올수도 있음.
+    return new ResponseEntity<Map<String,Object>>(Map.of("deleteCount", memberDao.deleteMembers(Arrays.asList(memberNoList.split(","))))
+                                                , HttpStatus.OK);
   }
 
 }
