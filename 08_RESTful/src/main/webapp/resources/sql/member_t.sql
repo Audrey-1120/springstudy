@@ -1038,5 +1038,4 @@ insert into MEMBER_T (MEMBER_NO, EMAIL, NAME, GENDER) values (1000, 'kmacraerr@r
 
 commit;
 
-select * from member_t where member_no = 999;
 

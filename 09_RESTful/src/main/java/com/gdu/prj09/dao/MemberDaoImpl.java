@@ -66,6 +66,7 @@ public class MemberDaoImpl implements MemberDao {
     return sqlSessionTemplate.selectList(NS + "getMemberList", map);
   }
 
+  // 상세 조회
   @Override
   public MemberDto getMemberByNo(int memberNo) {
     return sqlSessionTemplate.selectOne(NS + "getMemberByNo", memberNo);

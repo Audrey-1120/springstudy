@@ -43,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
     
   }
 
+  // 상세 조회
   @Override
   public ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo) {
     

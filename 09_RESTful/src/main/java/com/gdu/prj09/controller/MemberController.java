@@ -56,7 +56,7 @@ public class MemberController {
   @GetMapping("/admin/member.do")
   public void adminMember() {}
   
-  
+  // 회원 등록
   @PostMapping(value="/members", produces="application/json")
   public ResponseEntity<Map<String, Object>> registerMember(@RequestBody Map<String, Object> map
                                                           , HttpServletResponse response) {
