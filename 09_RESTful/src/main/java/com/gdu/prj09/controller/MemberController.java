@@ -63,6 +63,7 @@ public class MemberController {
     return memberService.registerMember(map, response);
   }
   
+  // 전체 조회
   @GetMapping(value="/members/page/{p}/display/{dp}", produces="application/json")
   public ResponseEntity<Map<String, Object>> getMembers(@PathVariable(value="p", required=false) Optional<String> optPage
                                                       , @PathVariable(value="dp", required=false) Optional<String> optDisplay) {
@@ -71,6 +72,7 @@ public class MemberController {
     return memberService.getMembers(page, display);
   }
   
+  // 상세 조회
   @GetMapping(value="/members/{memberNo}", produces="application/json")
   public ResponseEntity<Map<String, Object>> getMemberByNo(@PathVariable(value="memberNo", required=false) Optional<String> opt) {
     int memberNo = Integer.parseInt(opt.orElse("0"));
@@ -78,18 +80,21 @@ public class MemberController {
   }
   
   // jsp가 전달하는 json 데이터는 body에 포함되어 있음.
-  // 
+  
+  // 정보 수정
   @PutMapping(value="/members", produces="application/json")
   public ResponseEntity<Map<String, Object>> modifyMember(@RequestBody Map<String, Object> map) {
     return memberService.modifyMember(map);
   }
   
+  // 회원 삭제
   @DeleteMapping(value="/member/{memberNo}", produces="application/json")
   public ResponseEntity<Map<String, Object>> removeMember(@PathVariable(value="memberNo", required=false)Optional<String> opt) {
     int memberNo = Integer.parseInt(opt.orElse("0"));
     return memberService.removeMember(memberNo);
   }
   
+  // 다중 삭제
   @DeleteMapping(value="/members/{memberNoList}", produces="application/json")
   public ResponseEntity<Map<String, Object>> removeMembers(@PathVariable(value="memberNoList", required=false) Optional<String> opt) {
     return memberService.removeMembers(opt.orElse("0"));
