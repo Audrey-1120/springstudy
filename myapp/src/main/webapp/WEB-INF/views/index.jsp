@@ -20,6 +20,14 @@
 
 </head>
 <body>
+  
+  <!-- session에 저장된 user -->
+  <c:if test="${sessionScope.user == null}">
+    <a href="${contextPath}/user/signin.page">Sign In</a>
+  </c:if>
+  <c:if test="${sessionScope.user != null}">
+    ${sessionScope.user.name}님 반갑습니다.
+  </c:if>
 
   <a href="${contextPath}/user/signin.page">Sign In</a>
 

@@ -52,7 +52,7 @@ public class UserController {
     
     // Sign In 페이지로 url 또는 referer 넘겨 주기
     // referer의 존재 여부와 포함 된 게 있는지에 따라 url을 넘김.
-    model.addAttribute("url", url != null ? url : referer);
+    model.addAttribute("url", url);
     
     return "user/signin";
     

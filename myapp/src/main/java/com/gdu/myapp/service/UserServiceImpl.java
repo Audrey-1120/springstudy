@@ -34,9 +34,10 @@ public class UserServiceImpl implements UserService {
       
       // 패스워드의 경우, 값을 가져와서 바로 암호화를 해주자.
       String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
+      String ip = request.getRemoteAddr();
       
       // 가져온 데이터를 map에 담는다.
-      Map<String, Object> params = Map.of("email", email, "pw", pw);
+      Map<String, Object> params = Map.of("email", email, "pw", pw, "ip", ip);
       
       UserDto user = userMapper.getUserByMap(params);
       
