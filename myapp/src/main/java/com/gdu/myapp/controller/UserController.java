@@ -1,12 +1,17 @@
 package com.gdu.myapp.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.gdu.myapp.service.UserService;
@@ -33,7 +38,7 @@ public class UserController {
     
     // referer 로 돌아가면 안 되는 예외 상황 (아이디/비밀번호 찾기 화면, 가입 화면 등)
     // 사용하면 안되는 url들을 적는다.
-    String[] excludeUrls = {};
+    String[] excludeUrls = {"/findId.page", "/findPw.page", "/signup.page"};
     
     // Sign In 이후 이동할 url
     // 어떤 사이트는 들어가자마자 로그인 함. -> referer값 없다!
@@ -60,7 +65,25 @@ public class UserController {
   
   @PostMapping("/signin.do")
   public void signin(HttpServletRequest request, HttpServletResponse response) {
-    userService.signin(request, response);
+    userService.signin(request, response); // 서비스에서 모두 처리하세요~
   }
+  
+  @GetMapping("/signup.page")
+  public String signupPage() {
+    return "user/signup";
+  }
+  
+  @PostMapping(value="/checkEmail.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> checkEmail(@RequestBody Map<String, Object> params) {
+    return userService.checkEmail(params);
+  }
+  
+  // produces : fetch의 결과 응답의 타입은??
+  @PostMapping(value="/sendCode.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
+    System.out.println(params);
+    return new ResponseEntity<Map<String,Object>>(HttpStatus.OK);
+  }
+  
   
 }

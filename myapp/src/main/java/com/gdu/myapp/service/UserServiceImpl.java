@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gdu.myapp.dto.UserDto;
@@ -26,26 +28,37 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void signin(HttpServletRequest request, HttpServletResponse response) {
-    // 현재 3가지 정보(이메일, 패스워드, url)이 넘어왔다.
+    // - 현재 3가지 정보(이메일, 패스워드, url)이 넘어왔다.
     
     try {
       
+      // 입력한 아이디
       String email = request.getParameter("email");
       
-      // 패스워드의 경우, 값을 가져와서 바로 암호화를 해주자.
+      // 입력한 비밀번호 + SHA256 방식의 암호화
       String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
+      
+      // 접속 IP (접속 기록을 남길 때 필요한 정보)
       String ip = request.getRemoteAddr();
+
+      // DB로 보낼 정보 (email/pw : USER_T, email/ip: ACCESS_HISTORY_T)
+      Map<String, Object> params = Map.of("email", email
+                                        , "pw", pw
+                                        , "ip", ip);
       
-      // 가져온 데이터를 map에 담는다.
-      Map<String, Object> params = Map.of("email", email, "pw", pw, "ip", ip);
-      
+      // email/pw 가 일치하는 회원 정보 가져오기
       UserDto user = userMapper.getUserByMap(params);
       
+      // 일치하는 회원 있음
       if(user != null) {
-        // 가져온 객체가 있으므로, 받아온 url로 넘어간다.
-        // 로그인의 기본 원리는 session(데이터바인딩 영역)에 회원가입한 사람의 정보를 올려둔다.
-        request.getSession().setAttribute("user", user);
+        // 접속 기록 ACCESS_HISTORY_T에 남기기
+        userMapper.insertAccessHistory(params);
+        // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기
+        request.getSession().setAttribute("user", user); // - 저장할 이름은 모든 조원들이 공유를 해야 함.
+        // Sign In 후 페이지 이동
         response.sendRedirect(request.getParameter("url"));
+        
+      // 일치하는 회원 없음. (Sign In 성공)
       } else {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -61,8 +74,14 @@ public class UserServiceImpl implements UserService {
       e.printStackTrace();
     }
     
-    
-    
+  }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params) {
+    // 값이 없어야? 사용가능하다!
+    boolean enableEmail = userMapper.getUserByMap(params) == null
+                       && userMapper.getLeaveUserByMap(params) == null; 
+    return new ResponseEntity<>(Map.of("enableEmail", enableEmail), HttpStatus.OK);
   }
 
   @Override
@@ -82,5 +101,8 @@ public class UserServiceImpl implements UserService {
     // TODO Auto-generated method stub
 
   }
+
+  
+  
 
 }
