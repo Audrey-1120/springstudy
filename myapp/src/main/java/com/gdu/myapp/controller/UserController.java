@@ -81,8 +81,7 @@ public class UserController {
   // produces : fetch의 결과 응답의 타입은??
   @PostMapping(value="/sendCode.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
-    System.out.println(params);
-    return new ResponseEntity<Map<String,Object>>(HttpStatus.OK);
+    return userService.sendCode(params);
   }
   
   
