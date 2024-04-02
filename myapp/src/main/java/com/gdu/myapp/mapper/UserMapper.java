@@ -11,7 +11,7 @@ public interface UserMapper {
   int insertAccessHistory(Map<String, Object> map);
   LeaveUserDto getLeaveUserByMap(Map<String, Object> map);
   int insertUser(UserDto user);
-  
+  int deleteUser(int userNo);
   
 
 }

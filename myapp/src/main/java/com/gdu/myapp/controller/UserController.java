@@ -1,9 +1,12 @@
 package com.gdu.myapp.controller;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.service.UserService;
 
 @RequestMapping("/user")
@@ -59,6 +64,19 @@ public class UserController {
     // referer의 존재 여부와 포함 된 게 있는지에 따라 url을 넘김.
     model.addAttribute("url", url);
     
+    /************** 네이버 로그인 1 */
+    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
+    String state = new BigInteger(130, new SecureRandom()).toString(); // 만드는 방법은 네이버 개발자 센터에 있음.
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append("https://nid.naver.com/oauth2.0/authorize");
+    builder.append("?response_type=code");
+    builder.append("&client_id=5Z51aSQ6rKZKWvfxcgF_");
+    builder.append("&redirect_uri=" + redirectUri);
+    builder.append("&state=" + state);
+    
+    model.addAttribute("naverLoginUrl", builder.toString());
+    
     return "user/signin";
     
   }
@@ -66,6 +84,11 @@ public class UserController {
   @PostMapping("/signin.do")
   public void signin(HttpServletRequest request, HttpServletResponse response) {
     userService.signin(request, response); // 서비스에서 모두 처리하세요~
+  }
+  
+  @PostMapping("/signup.do")
+  public void signup(HttpServletRequest request, HttpServletResponse response) {
+    userService.signup(request, response);
   }
   
   @GetMapping("/signup.page")
@@ -82,6 +105,16 @@ public class UserController {
   @PostMapping(value="/sendCode.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
     return userService.sendCode(params);
+  }
+  
+  @GetMapping("/leave.do")
+  public void leave(HttpServletRequest request, HttpServletResponse response) {
+    userService.leave(request, response);
+  }
+  
+  @GetMapping("/signout.do")
+  public void signout(HttpServletRequest request, HttpServletResponse response) {
+    userService.signout(request, response);
   }
   
   

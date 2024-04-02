@@ -33,7 +33,7 @@
       </div>
       
       <div>
-        <label for="pw">이메일</label>
+        <label for="pw">비밀번호</label>
         <input type="password" id="pw" name="pw" placeholder="●●●●">
       </div>
       <!-- model에 저장되어 있는 데이터는 한번만 이동함.  -->
@@ -41,6 +41,11 @@
       <div>
         <input type="hidden" name="url" value="${url}">
         <button type="submit">Sign In</button>
+      </div>
+      <div>
+        <a href="${naverLoginUrl}">
+          <img src="${contextPath}/resources/2021_Login_with_naver_guidelines_Kr/btnG_아이콘원형.png">
+        </a>
       </div>
     </form>
   </div>

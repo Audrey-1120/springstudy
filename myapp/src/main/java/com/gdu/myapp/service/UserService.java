@@ -9,14 +9,14 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
   void signin(HttpServletRequest request, HttpServletResponse response);
-
   // 이메일 체크
   // Map을 넘길건데, 비동기 처리할것이므로 ResponseEntity
   ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params);
   ResponseEntity<Map<String, Object>> sendCode(Map<String, Object> params);
-
-  void signout(HttpServletRequest request, HttpServletResponse response);
-  void signup(HttpServletRequest request, HttpServletResponse response);
   void leave(HttpServletRequest request, HttpServletResponse response);
+
+
+  void signup(HttpServletRequest request, HttpServletResponse response);
+  void signout(HttpServletRequest request, HttpServletResponse response);
   
 }

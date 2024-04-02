@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,6 +88,8 @@ public class UserServiceImpl implements UserService {
     // 인증코드 생성
     String code = MySecurityUtils.getRandomString(6, true, true);
     
+    System.out.println("인증코드: " + code);
+    
     // 메일 보내기
     myJavaMailUtils.sendMail((String)params.get("email")
                             , "myapp 인증요청"
@@ -106,24 +109,141 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void signout(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
   public void signup(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
+    
+    // 전달된 파라미터
+    String email = request.getParameter("email");
+    String pw = MySecurityUtils.getSha256(request.getParameter("pw"));
+    String name = MySecurityUtils.getPreventXss(request.getParameter("name"));
+    // mobile은 - 처리가 필요.
+    String mobile = request.getParameter("mobile");
+    String gender = request.getParameter("gender");
+    String event = request.getParameter("event");
+    
+    // Mapper 로 보낼 UserDto 객체 생성
+    UserDto user = UserDto.builder()
+        .email(email)
+        .pw(pw)
+        .name(name)
+        .mobile(mobile)
+        .gender(gender)
+        .eventAgree(event == null ? 0 : 1)
+        .build();
+    
+    // 회원 가입
+    int insertCount = userMapper.insertUser(user);
+    
+    try {
+      
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      
+      // 가입 성공
+      if(insertCount == 1) {
+        
+        // Sign In 및 접속 기록을 위한 Map
+        Map<String, Object> map = Map.of("email", email
+                                       , "pw", pw
+                                       , "ip", request.getRemoteAddr());
+        
+        // Sign In (세션에 user 저장하기)
+        request.getSession().setAttribute("user", userMapper.getUserByMap(map));
+        
+        // 접속 기록 남기기
+        userMapper.insertAccessHistory(map);
 
+        out.println("alert('회원가입이 성공하였습니다.')");
+        out.println("location.href='" + request.getContextPath() + "/main.page';");
+
+      // 가입 실패
+      } else {
+        out.println("alert('회원가입이 실패하였습니다.");
+        out.println("hitory.back();");
+      }
+      out.println("</script>");
+      out.flush();
+      out.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
   }
 
   @Override
   public void leave(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
 
+    try {
+      
+      // 세션에 저장된 user 값 확인
+      HttpSession session = request.getSession();
+      UserDto user = (UserDto) session.getAttribute("user");
+      
+      // 세션 만료로 user 정보가 세션에 없을 수 있음.
+      if(user == null) {
+        // 이런 경우에는 main으로 이동하면 됨.
+        response.sendRedirect(request.getContextPath() + "/main.page");
+      }
+      
+      // 탈퇴 처리
+      int deleteCount = userMapper.deleteUser(user.getUserNo());
+      
+      // 탈퇴 이후 응답 만들기
+      response.setContentType("text/html");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(deleteCount == 1) {
+        
+        // 세션에 저장된 모든 정보 초기화
+        session.invalidate(); // SessionStatus 객체의 setComplete() 메소드 호출
+        
+        
+        out.println("alert('탈퇴되었습니다. 이용해 주셔서 감사합니다.');");
+        out.println("location.href='" + request.getContextPath() + "/main.page';");
+        
+        // 탈퇴 실패
+      } else {
+        out.println("alert('탈퇴되지 않았습니다.')");
+        out.println("history.back();");
+      }
+      
+      out.println("</script>");
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
   }
+  
+  @Override
+  public void signout(HttpServletRequest request, HttpServletResponse response) {
 
-  
-  
+    try {
+      
+      HttpSession session = request.getSession();
+      UserDto user = (UserDto) session.getAttribute("user");
+      
+      if(user == null) {
+        // 세션 값 없음.
+        response.sendRedirect(request.getContextPath() + "/main.page");
+        
+      } else {
+        // 세션 값 없애기
+        session.invalidate();
+      }
+      
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      out.println("alert('로그아웃 되었습니다.')");
+      out.println("location.href='" + request.getContextPath() + "/main.page';");
+      out.println("</script>");
+      out.flush();
+      out.close();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
 }
