@@ -14,9 +14,13 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 <!-- include summernote css/js -->
+
+<!-- 
 <link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
+ -->
+
 
 </head>
 <body>
@@ -43,7 +47,7 @@
         <button type="submit">Sign In</button>
       </div>
       <div>
-        <a href="${naverLoginUrl}">
+        <a href="${naverLoginURL}">
           <img src="${contextPath}/resources/2021_Login_with_naver_guidelines_Kr/btnG_아이콘원형.png">
         </a>
       </div>

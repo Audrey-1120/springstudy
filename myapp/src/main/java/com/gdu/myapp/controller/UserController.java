@@ -32,86 +32,59 @@ public class UserController {
     this.userService = userService;
   }
   
+  // 로그인 페이지
   @GetMapping("/signin.page")
   public String signinPage(HttpServletRequest request
                          , Model model) {
-    // - request에 필요한 데이터가 담겨있다. 이를 model에 담아서 signin 페이지로 전달한다.
-    // - 로그인 후에 이동할 url을 request로부터 꺼낸다.
     
-    // Sign In 페이지 이전의 주소가 저장되어 있는 Request Header 의 referer
-    String referer = request.getHeader("referer");
+    // Sign In 페이지로 url 넘겨 주기 (로그인 후 이동할 경로를 의미함)
+    model.addAttribute("url",  userService.getRedirectURLAfterSignin(request));
     
-    // referer 로 돌아가면 안 되는 예외 상황 (아이디/비밀번호 찾기 화면, 가입 화면 등)
-    // 사용하면 안되는 url들을 적는다.
-    String[] excludeUrls = {"/findId.page", "/findPw.page", "/signup.page"};
-    
-    // Sign In 이후 이동할 url
-    // 어떤 사이트는 들어가자마자 로그인 함. -> referer값 없다!
-    String url = referer;
-    if(referer != null) {
-      // referer값이 존재한다면 ..
-      for(String excludeUrl : excludeUrls) { // excludeUrl에 담겨있는 주소와 같은 게 나오면 진행할 필요 없으므로 break;
-        if(referer.contains(excludeUrl)) {
-          url = request.getContextPath() + "/main.page";
-          break;
-        }
-      }
-    } else {
-      url = request.getContextPath() + "/main.page";
-    }
-    
-    // Sign In 페이지로 url 또는 referer 넘겨 주기
-    // referer의 존재 여부와 포함 된 게 있는지에 따라 url을 넘김.
-    model.addAttribute("url", url);
-    
-    /************** 네이버 로그인 1 */
-    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
-    String state = new BigInteger(130, new SecureRandom()).toString(); // 만드는 방법은 네이버 개발자 센터에 있음.
-    
-    StringBuilder builder = new StringBuilder();
-    builder.append("https://nid.naver.com/oauth2.0/authorize");
-    builder.append("?response_type=code");
-    builder.append("&client_id=5Z51aSQ6rKZKWvfxcgF_");
-    builder.append("&redirect_uri=" + redirectUri);
-    builder.append("&state=" + state);
-    
-    model.addAttribute("naverLoginUrl", builder.toString());
+    // Sign In 페이지로 naverLoginURL 넘겨 주기 (네이버 로그인 요청 주소를 의미함)
+    model.addAttribute("naverLoginURL", userService.getNaverLoginURL(request));
     
     return "user/signin";
     
   }
   
+  // 로그인 기능
   @PostMapping("/signin.do")
   public void signin(HttpServletRequest request, HttpServletResponse response) {
     userService.signin(request, response); // 서비스에서 모두 처리하세요~
   }
   
+  // 회원가입 기능
   @PostMapping("/signup.do")
   public void signup(HttpServletRequest request, HttpServletResponse response) {
     userService.signup(request, response);
   }
   
+  // 회원가입 페이지
   @GetMapping("/signup.page")
   public String signupPage() {
     return "user/signup";
   }
   
+  // 이메일 중복체크
   @PostMapping(value="/checkEmail.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> checkEmail(@RequestBody Map<String, Object> params) {
     return userService.checkEmail(params);
   }
   
+  // 이메일 인증코드
   // produces : fetch의 결과 응답의 타입은??
   @PostMapping(value="/sendCode.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> sendCode(@RequestBody Map<String, Object> params) {
     return userService.sendCode(params);
   }
   
+  // 회원 탈퇴
   @GetMapping("/leave.do")
   public void leave(HttpServletRequest request, HttpServletResponse response) {
     userService.leave(request, response);
   }
   
+  // 로그아웃
   @GetMapping("/signout.do")
   public void signout(HttpServletRequest request, HttpServletResponse response) {
     userService.signout(request, response);

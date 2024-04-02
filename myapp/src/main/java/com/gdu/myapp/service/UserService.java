@@ -18,5 +18,7 @@ public interface UserService {
 
   void signup(HttpServletRequest request, HttpServletResponse response);
   void signout(HttpServletRequest request, HttpServletResponse response);
+  String getRedirectURLAfterSignin(HttpServletRequest request);
+  String getNaverLoginURL(HttpServletRequest request);
   
 }

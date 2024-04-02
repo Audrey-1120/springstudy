@@ -188,54 +188,55 @@ const fnCheckEmail =()=> {
 		 return;
 	 }
 	 
-	 // 이메일 중복 체크
-	 fetch(fnGetContextPath() + '/user/checkEmail.do', {
-		 // 이곳은 옵션..
-		 method: 'POST',
-		 // header(요청헤더) 이것도 객체로 전달 가능
-		 headers: {
-			 'Content-Type': 'application/json'
-		 },
-		 body: JSON.stringify({
-			 'email': inpEmail.value
-		 })
-	 })
-	 .then(response=> response.json())   // .then( (response) => { return response.json(); } 
-	 .then(resData => { 
-		 if(resData.enableEmail) {
-	 	  document.getElementById('msg-email').innerHTML = ''; // 해당 메시지 지워주는 작업.
-			fetch(fnGetContextPath() + '/user/sendCode.do', {
-			  method: 'POST',
-			   headers: {
-			    'Content-Type': 'application/json'
-			   },
-			   body: JSON.stringify({
-			    'email': inpEmail.value
-			   })
-			 })
-			 .then(response=>response.json())
-			 .then(resData=> {  // resData = {"code": "123qaz"}
-				 let inpCode = document.getElementById('inp-code');
-				 let btnVerifyCode = document.getElementById('btn-verify-code');
-				 alert(inpEmail.value + '로 인증코드를 전송했습니다.');
-				 inpCode.disabled = false;
-				 btnVerifyCode.addEventListener('click', (evt) => {
-					 if(resData.code === inpCode.value) {
-						 alert('인증되었습니다.');
-						 emailCheck = true;
-					 } else {
-						 alert('인증되지 않았습니다.');
-						 emailCheck = false;
-					 }
-				 })  
-			 })
-		 } else {
-			 document.getElementById('msg-email').innerHTML = '이미 사용 중인 이메일입니다.';
-			 emailCheck = false;
-			 return;
-		 }
-	 })
-}
+	 
+   // 이메일 중복 체크
+   fetch(fnGetContextPath() + '/user/checkEmail.do', {
+     // 이곳은 옵션..
+     method: 'POST',
+     // header(요청헤더) 이것도 객체로 전달 가능
+     headers: {
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify({
+       'email': inpEmail.value
+     })
+   })
+   .then(response=> response.json())   // .then( (response) => { return response.json(); } 
+   .then(resData => { 
+     if(resData.enableEmail) {
+      document.getElementById('msg-email').innerHTML = ''; // 해당 메시지 지워주는 작업.
+      fetch(fnGetContextPath() + '/user/sendCode.do', {
+        method: 'POST',
+         headers: {
+          'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({
+          'email': inpEmail.value
+         })
+       })
+       .then(response=>response.json())
+       .then(resData=> {  // resData = {"code": "123qaz"}
+         let inpCode = document.getElementById('inp-code');
+         let btnVerifyCode = document.getElementById('btn-verify-code');
+         alert(inpEmail.value + '로 인증코드를 전송했습니다.');
+         inpCode.disabled = false;
+         btnVerifyCode.addEventListener('click', (evt) => {
+           if(resData.code === inpCode.value) {
+             alert('인증되었습니다.');
+             emailCheck = true;
+           } else {
+             alert('인증되지 않았습니다.');
+             emailCheck = false;
+           }
+         })  
+       })
+     } else {
+       document.getElementById('msg-email').innerHTML = '이미 사용 중인 이메일입니다.';
+       emailCheck = false;
+       return;
+     }
+   })
+ }
 
 // 이름 글자수 검사
 const fnCheckName = () => {
