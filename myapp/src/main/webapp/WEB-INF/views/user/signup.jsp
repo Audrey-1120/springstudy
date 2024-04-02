@@ -274,14 +274,14 @@ const fnCheckMobile = () => {
 	}
 }
 
+// 서비스 동의 여부
 const fnCheckAgree = () => {
 	let chkService = document.getElementById('chk-service');
 	agreeCheck = chkService.checked;
 }
 
 
-
-
+// 회원가입
 const fnSignup = () => {
 	document.getElementById('frm-signup').addEventListener('submit', (evt)=>{
 		fnCheckAgree();
