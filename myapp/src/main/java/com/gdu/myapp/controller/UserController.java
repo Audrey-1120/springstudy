@@ -59,6 +59,40 @@ public class UserController {
     userService.signup(request, response);
   }
   
+  
+  @GetMapping("/naver/getAccessToken.do")
+  public String getAccessToken(HttpServletRequest request) {
+    String accessToken = userService.getNaverLoginAccessToken(request);
+    return "redirect:/user/naver/getProfile.do?accessToken=" + accessToken;
+  }
+  
+  @GetMapping("/naver/getProfile.do")
+  public String getProfile(HttpServletRequest request, Model model) {
+    // 간편가입 화면으로 보낼때는 사용자 정보를 model에 담아서 보낸다.
+    
+    // 네이버로부터 받은 프로필 정보
+    UserDto naverUser = userService.getNaverLoginProfile(request.getParameter("accessToken"));
+
+    // 반환 경로
+    String path = null;
+    
+    
+    // 프로필이 DB에 있는지 확인 (있으면 Sign In, 없으면 Sign Out)
+    if(userService.hasUser(naverUser)) {
+      // Sign In
+      userService.naverSignin(request, naverUser);
+      path = "redirect:/main.page";
+    } else {
+      // Sign Up (네이버 가입 화면으로 이동)
+      
+      model.addAttribute("naverUser", naverUser);
+      path = "user/naver_signup"; // forward할때는 경로만 작성
+    }
+    
+    return null;
+  }
+  
+  
   // 회원가입 페이지
   @GetMapping("/signup.page")
   public String signupPage() {

@@ -2,9 +2,12 @@ package com.gdu.myapp.mapper;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.gdu.myapp.dto.LeaveUserDto;
 import com.gdu.myapp.dto.UserDto;
 
+@Mapper
 public interface UserMapper {
   
   UserDto getUserByMap(Map<String, Object> map);
