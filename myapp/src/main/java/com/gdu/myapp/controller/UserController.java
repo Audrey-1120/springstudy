@@ -76,7 +76,6 @@ public class UserController {
     // 반환 경로
     String path = null;
     
-    
     // 프로필이 DB에 있는지 확인 (있으면 Sign In, 없으면 Sign Out)
     if(userService.hasUser(naverUser)) {
       // Sign In
@@ -84,12 +83,14 @@ public class UserController {
       path = "redirect:/main.page";
     } else {
       // Sign Up (네이버 가입 화면으로 이동)
+      // 패스워드 입력창으로 이동
+      // 입력한 패스워드값을 받아서 user 데이터에 넣느다.
       
       model.addAttribute("naverUser", naverUser);
       path = "user/naver_signup"; // forward할때는 경로만 작성
     }
     
-    return null;
+    return path;
   }
   
   

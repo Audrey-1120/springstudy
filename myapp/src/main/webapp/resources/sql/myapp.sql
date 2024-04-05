@@ -11,10 +11,11 @@ CREATE SEQUENCE LEAVE_USER_SEQ NOCACHE;
 CREATE SEQUENCE BBS_SEQ NOCACHE;
 
 /*********************************** 테이블 ***********************************/
+DROP TABLE BBS_T;
 DROP TABLE LEAVE_USER_T;
 DROP TABLE ACCESS_HISTORY_T;
 DROP TABLE USER_T;
-DROP TABLE BBS_T;
+
 
 -- 회원
 CREATE TABLE USER_T (
@@ -36,6 +37,8 @@ CREATE TABLE ACCESS_HISTORY_T (
   ACCESS_HISTORY_NO NUMBER             NOT NULL,
   EMAIL             VARCHAR2(100 BYTE),
   IP                VARCHAR2(50 BYTE),
+  USER_AGENT        VARCHAR2(150 BYTE),
+  SESSION_ID        VARCHAR2(32 BYTE),
   SIGNIN_DT         DATE,
   SIGNOUT_DT        DATE,
   CONSTRAINT PK_ACCESS_HISTORY PRIMARY KEY(ACCESS_HISTORY_NO),
@@ -53,14 +56,14 @@ CREATE TABLE LEAVE_USER_T (
   CONSTRAINT PK_LEAVE_USER PRIMARY KEY(LEAVE_USER_NO)
 );
 
--- 계층형 게시판 (N차 댓글)
+-- 계층형 게시판 (N차 답글)
 CREATE TABLE BBS_T (
   BBS_NO   NUMBER              NOT NULL,
   CONTENTS VARCHAR2(4000 BYTE) NOT NULL,
   USER_NO  NUMBER              NOT NULL,
   CREATE_DT DATE               NULL,
   STATE       NUMBER           NULL,  -- 0:삭제, 1:정상
-  DEPTH       NUMBER           NULL,  -- 0:원글, 1:댓글, 2:대댓글, ...
+  DEPTH       NUMBER           NULL,  -- 0:원글, 1:답글, 2:답답글, ...
   GROUP_NO    NUMBER           NULL,  -- 원글과 원글에 달린 모든 댓글들은 동일한 GROUP_NO를 가진다.
   GROUP_ORDER NUMBER           NULL,  -- 같은 GROUP_NO 내부에서 표시할 순서
   CONSTRAINT PK_BBS PRIMARY KEY(BBS_NO),
@@ -86,6 +89,10 @@ CREATE TABLE BLOG_T (
          ON DELETE CASCADE
 );
 */
+
+-- 기초 데이터 (사용자)
+INSERT INTO USER_T VALUES(USER_SEQ.NEXTVAL, 'admin@example.com', STANDARD_HASH('admin', 'SHA256'), '관리자', 'man', '010-1111-1111', 1, 0, CURRENT_DATE, CURRENT_DATE);
+COMMIT;
 
 /*********************************** 트리거 ***********************************/
 /*

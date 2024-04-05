@@ -384,8 +384,6 @@ public class UserServiceImpl implements UserService {
     userMapper.insertAccessHistory(map);
   }
   
-  
-  
   // 로그인
   @Override
   public void signin(HttpServletRequest request, HttpServletResponse response) {
