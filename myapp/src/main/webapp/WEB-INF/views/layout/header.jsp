@@ -56,11 +56,13 @@
     <div class="gnb-wrap">
       <ul class="gnb">
         <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
-        <li><a href="${contextPath}/">댓글형게시판</a></li>
+        <li><a href="${contextPath}/blog/list.do">댓글형게시판</a></li>
         <li><a href="${contextPath}/">첨부형게시판</a></li>
         <li><a href="${contextPath}/">마이페이지</a></li>
       </ul>
     </div>
+    
+    <div>현재 sessionId : <%=session.getId()%></div>
     
     
   </div>

@@ -113,7 +113,9 @@ public class UserServiceImpl implements UserService {
         // Sign In 및 접속 기록을 위한 Map
         Map<String, Object> map = Map.of("email", email
                                        , "pw", pw
-                                       , "ip", request.getRemoteAddr());
+                                       , "ip", request.getRemoteAddr()
+                                       , "userAgent", request.getHeader("User-Agent")
+                                       , "sessionId", request.getSession().getId());
        
         // Sign In (세션에 user 저장하기)
         request.getSession().setAttribute("user", userMapper.getUserByMap(map));
@@ -399,10 +401,15 @@ public class UserServiceImpl implements UserService {
       // 접속 IP (접속 기록을 남길 때 필요한 정보)
       String ip = request.getRemoteAddr();
       
+      // 접속 수단 (요청 헤더의 User-Agent 값)
+      String userAgent = request.getHeader("User-Agent");
+      
       // DB로 보낼 정보 (email/pw: USER_T , email/ip: ACCESS_HISTORY_T) 
       Map<String, Object> params = Map.of("email", email
                                         , "pw", pw
-                                        , "ip", ip);
+                                        , "ip", ip
+                                        , "userAgent", request.getHeader("User-Agent")
+                                        , "sessionId", request.getSession().getId());
       
       // email/pw 가 일치하는 회원 정보 가져오기
       UserDto user = userMapper.getUserByMap(params);
@@ -412,7 +419,9 @@ public class UserServiceImpl implements UserService {
         // 접속 기록 ACCESS_HISTORY_T 에 남기기
         userMapper.insertAccessHistory(params);
         // 회원 정보를 세션(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)에 보관하기
-        request.getSession().setAttribute("user", user);
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+        session.setMaxInactiveInterval(1800);
         // Sign In 후 페이지 이동
         response.sendRedirect(request.getParameter("url"));
       
@@ -440,26 +449,16 @@ public class UserServiceImpl implements UserService {
 
     try {
       
+      // Sign Out 기록 남기기
       HttpSession session = request.getSession();
-      UserDto user = (UserDto) session.getAttribute("user");
+      String sessionId = session.getId(); 
+      userMapper.updateAccessHistory(sessionId);
       
-      if(user == null) {
-        // 세션 값 없음.
-        response.sendRedirect(request.getContextPath() + "/main.page");
-        
-      } else {
-        // 세션 값 없애기
-        session.invalidate();
-      }
+      // 세션에 저장된 모든 정보 초기화
+      session.invalidate();
       
-      response.setContentType("text/html; charset=UTF-8");
-      PrintWriter out = response.getWriter();
-      out.println("<script>");
-      out.println("alert('로그아웃 되었습니다.')");
-      out.println("location.href='" + request.getContextPath() + "/main.page';");
-      out.println("</script>");
-      out.flush();
-      out.close();
+      // 메인 페이지로 이동
+      response.sendRedirect(request.getContextPath() + "/main.page");
       
     } catch (Exception e) {
       e.printStackTrace();
