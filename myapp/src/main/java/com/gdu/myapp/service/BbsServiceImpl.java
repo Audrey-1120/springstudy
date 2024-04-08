@@ -148,31 +148,7 @@ public class BbsServiceImpl implements BbsService {
                                                      , display
                                                      , "column=" + column + "&query=" + query));
     // sort는 null 처리, 검색 결과를 가져오는 것이기 때문에 list.do가 아니라 search.do로 보내야 함.
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /*
     Map<String, Object> map = Map.of("column", request.getParameter("column")
                                    , "query", request.getParameter("query"));
@@ -201,5 +177,9 @@ public class BbsServiceImpl implements BbsService {
     */
     
   }
+  
+  
+  
+  
 
 }

@@ -165,3 +165,5 @@ BEGIN
   );
   -- COMMIT; 트리거 내에서는 오류가 있으면 ROLLBACK, 없으면 COMMIT 자동 처리
 END;
+
+
