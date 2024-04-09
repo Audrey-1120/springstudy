@@ -65,11 +65,17 @@ public class BlogController {
   
   @PostMapping(value="/registerComment.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> registerComment(HttpServletRequest request) {
-    System.out.println(request.getParameter("contents"));
-    System.out.println(request.getParameter("blogNo"));
-    System.out.println(request.getParameter("userNo"));
-    return new ResponseEntity<>(null);
+    return new ResponseEntity<Map<String,Object>>(Map.of("insertCount", blogService.registerComment(request))
+                                                        , HttpStatus.OK);
+    // return ResponseEntity.ok(Map.of("insertCount", blogService.registerComment(request)));
   }
+  
+  @GetMapping(value="/comment/list.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> commentList(HttpServletRequest request) {
+    
+    return ResponseEntity.ok(blogService.getCommentList(request));
+  }
+  
   
   
   

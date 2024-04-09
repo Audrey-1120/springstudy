@@ -16,6 +16,6 @@ public interface BlogService {
   int registerBlog(HttpServletRequest request);
   ResponseEntity<Map<String, Object>> getBlogList(HttpServletRequest request);
   BlogDto getBlogByNo(int blogNo);
-  
-
+  int registerComment(HttpServletRequest request);
+  Map<String, Object> getCommentList(HttpServletRequest request);
 }

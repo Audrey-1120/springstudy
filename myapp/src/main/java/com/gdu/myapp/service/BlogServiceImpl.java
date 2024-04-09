@@ -1,6 +1,7 @@
 package com.gdu.myapp.service;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
 import com.gdu.myapp.dto.BlogDto;
+import com.gdu.myapp.dto.CommentDto;
 import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.mapper.BlogMapper;
 import com.gdu.myapp.utils.MyFileUtils;
@@ -122,4 +124,61 @@ public class BlogServiceImpl implements BlogService {
   public BlogDto getBlogByNo(int blogNo) {
     return blogMapper.getBlogByNo(blogNo);
   }
+  
+  @Override
+  public int registerComment(HttpServletRequest request) {
+
+    // 요청 파라미터
+    String contents = MySecurityUtils.getPreventXss(request.getParameter("contents"));
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    
+    // UserDto 객체 생성
+    UserDto user = new UserDto();
+    user.setUserNo(userNo);
+    
+    // CommentDto 객체 생성
+    CommentDto comment = CommentDto.builder()
+                            .contents(contents)
+                            .user(user)
+                            .blogNo(blogNo)
+                          .build();
+    
+    // DB 에 저장 & 결과 반환
+    return blogMapper.insertComment(comment);
+    
+  }
+  
+  @Override
+  public Map<String, Object> getCommentList(HttpServletRequest request) {
+
+    // 요청 파라미터
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    int page = Integer.parseInt(request.getParameter("page"));
+    
+    // 전체 댓글 수
+    int total = blogMapper.getCommentCount(blogNo);
+    
+    // 한 페이지에 표시할 댓글 개수
+    int display = 10;
+    
+    // 페이징 처리
+    myPageUtils.setPaging(total, display, page);
+    
+    // 목록 가져올 때 사용할 Map 생성
+    Map<String, Object> map = Map.of("blogNo", blogNo
+                                   , "begin", myPageUtils.getBegin()
+                                   , "end", myPageUtils.getEnd());
+    
+    // 결과 (목록, 페이징) 반환
+    
+    return Map.of("commentList", blogMapper.getCommentList(map)
+                , "paging", myPageUtils.getAsyncPaging());
+    
+  }
+  
+  
+  
+  
+  
 }
