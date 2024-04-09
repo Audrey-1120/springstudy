@@ -56,6 +56,7 @@
 
 <script>
 
+// 로그인 검사
 const fnCheckSignin = () => {
   if('${sessionScope.user}' === '') {
     if(confirm('Sign In 이 필요한 기능입니다. Sign In 할까요?')) {
@@ -64,6 +65,7 @@ const fnCheckSignin = () => {
   }
 }
 
+// 댓글 등록
 const fnRegisterComment = () => {
 	$('#btn-comment-register').on('click', (evt) => {
 		fnCheckSignin();
@@ -94,6 +96,7 @@ const fnRegisterComment = () => {
 // 전역 변수
 var page = 1;
 
+// 댓글 목록 가져오기
 const fnCommentList = () => {
 	$.ajax({
 		type: 'GET',
@@ -119,36 +122,43 @@ const fnCommentList = () => {
 			  } else {
 				  str += '<div style="padding-left: 32px;">'
 			  }
-			  // 댓글 내용 표시
-			  str += '<span>'
-			  str += comment.user.email;
-			  str += '(' + moment(comment.createDt).format('YYYY.MM.DD.') + ')';
-			  str += '</span>';
-			  str += '<div>' + comment.contents + '</div>';
-			  // 답글 버튼 (원글에만 답글 버튼이 생성됨)
-			  if(comment.depth === 0) {
-				  str += '<button type="button" class="btn btn-success btn-reply">답글</button>';
+			  
+			  if(comment.state === 1) {
+  			  // 댓글 내용 표시
+  			  str += '<span>'
+  			  str += comment.user.email;
+  			  str += '(' + moment(comment.createDt).format('YYYY.MM.DD.') + ')';
+  			  str += '</span>';
+  			  str += '<div>' + comment.contents + '</div>';
+  			  // 답글 버튼 (원글에만 답글 버튼이 생성됨)
+  			  if(comment.depth === 0) {
+  				  str += '<button type="button" class="btn btn-success btn-reply">답글</button>';
+  			  }
+  			  // 삭제 버튼 (내가 작성한 댓글에만 삭제 버튼이 생성됨)
+  			  if(Number('${sessionScope.user.userNo}') === comment.user.userNo) {
+  				  str += '<button type="button" class="btn btn-danger btn-remove" data-comment-no="' + comment.commentNo + '">삭제</button>';
+  			  }
+  			  /********************* 답글 입력 화면 *********************/
+  			  if(comment.depth === 0) {
+    			  str += '<div>';
+    			  str += '  <form class="frm-reply">';
+    			  str += '    <input type="hidden" name="groupNo" value="' + comment.groupNo + '">';
+    			  str += '    <input type="hidden" name="blogNo" value="${blog.blogNo}">';
+    			  // comment 혹은 상세보기 blogNo 둘다 가능
+    			  str += '    <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">';
+    			  str += '    <textarea name="contents" placeholder="답글 입력"></textarea>';
+    			  str += '    <button type="button" class="btn btn-warning btn-register-reply">작성완료</button>';
+    			  str += '  </form>';
+    			  str += '</div>'
+  			  }
+  			  /**********************************************************/
+  			  // 댓글 닫는 <div>
+  			  str += '</div>';
+			  } else {
+				  str += '<span>'
+				  str += '삭제된 댓글입니다.';
+				  str += '</span>';
 			  }
-			  // 삭제 버튼 (내가 작성한 댓글에만 삭제 버튼이 생성됨)
-			  if(Number('${sessionScope.user.userNo}') === comment.user.userNo) {
-				  str += '<button type="button" class="btn btn-danger btn-remove" data-comment-no="' + comment.commentNo + '">삭제</button>';
-			  }
-			  /********************* 답글 입력 화면 *********************/
-			  if(comment.depth === 0) {
-  			  str += '<div>';
-  			  str += '  <form class="frm-reply">';
-  			  str += '    <input type="hidden" name="groupNo" value="' + comment.groupNo + '">';
-  			  str += '    <input type="hidden" name="blogNo" value="${blog.blogNo}">';
-  			  // comment 혹은 상세보기 blogNo 둘다 가능
-  			  str += '    <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">';
-  			  str += '    <textarea name="contents" placeholder="답글 입력"></textarea>';
-  			  str += '    <button type="button" class="btn btn-warning btn-register-reply">작성완료</button>';
-  			  str += '  </form>';
-  			  str += '</div>'
-			  }
-			  /**********************************************************/
-			  // 댓글 닫는 <div>
-			  str += '</div>';
 			  // 목록에 댓글 추가
 			  commentList.append(str); 
 		  })
@@ -161,11 +171,13 @@ const fnCommentList = () => {
 	})
 }
 
+// 페이징
 const fnPaging = (p) => {
 	page = p;
 	fnCommentList();
 }
 
+// 대댓글 등록
 const fnRegisterReply = () => {
 	$(document).on('click', '.btn-register-reply', (evt) => {
 		fnCheckSignin();
@@ -190,11 +202,35 @@ const fnRegisterReply = () => {
 	})
 }
 
+// 댓글 삭제
+const fnRemoveComment = () => {
+	$(document).on('click', '.btn-remove', (evt) => {
+		// dataset에 들어있는 comment_no을 서버로 보낸다.
+		$.ajax({
+			type: 'POST',
+			url: '${contextPath}/blog/removeComment.do',
+			data: 'commentNo=' + evt.target.dataset.commentNo,
+			dataType: 'json',
+			success: (resData) => {
+				if(resData.deleteCount === 1) {
+					alert('답글이 삭제되었습니다.');
+					fnCommentList();
+				} else {
+					alert('답글 삭제가 실패하였습니다.');
+				}
+			},
+			error: (jqXHR) => {
+				alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+			}
+		})
+	})
+}
 
 
 $('#contents').on('click', fnCheckSignin);
 fnRegisterComment();
 fnCommentList();
+fnRemoveComment();
 fnRegisterReply();
 
 

@@ -20,4 +20,5 @@ public interface BlogService {
   int registerComment(HttpServletRequest request);
   Map<String, Object> getCommentList(HttpServletRequest request);
   int registerReply(HttpServletRequest request);
+  int removeComment(HttpServletRequest request);
 }

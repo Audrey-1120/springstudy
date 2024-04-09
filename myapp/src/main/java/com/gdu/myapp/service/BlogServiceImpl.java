@@ -211,6 +211,11 @@ public class BlogServiceImpl implements BlogService {
     return blogMapper.insertReply(reply);
   }
   
+  @Override
+  public int removeComment(HttpServletRequest request) {
+    int commentNo = Integer.parseInt(request.getParameter("commentNo"));
+    return blogMapper.deleteComment(commentNo);
+  }
 
   
   
