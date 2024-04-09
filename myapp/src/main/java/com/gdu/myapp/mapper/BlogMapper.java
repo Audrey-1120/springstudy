@@ -20,5 +20,6 @@ public interface BlogMapper {
   List<CommentDto> getCommentList(Map<String, Object> map);
   int insertReply(CommentDto comment);
   int deleteComment(int commentNo);
+  int modifyBlog(BlogDto blog);
 
 }

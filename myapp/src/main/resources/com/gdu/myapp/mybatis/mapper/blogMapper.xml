@@ -156,6 +156,15 @@
      WHERE COMMENT_NO = #{commentNo}
   </update>  
   
+  <update id="modifyBlog"
+          parameterType="BlogDto">
+    UPDATE BLOG_T
+       SET TITLE = #{title}
+         , CONTENTS = #{contents}
+         , MODIFY_DT = CURRENT_TIMESTAMP
+     WHERE BLOG_NO = #{blogNo}
+  </update>
+  
   
   
   

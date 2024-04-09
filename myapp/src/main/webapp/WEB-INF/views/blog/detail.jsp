@@ -33,6 +33,10 @@
     <span>내용</span>
     <span>${blog.contents}</span>
   </div>
+  
+  <div>
+    <button type="button" class="btn-modify" data-blog-no="${blog.blogNo}">수정하기</a></button>
+  </div>
 
 <hr>
 
@@ -223,6 +227,15 @@ const fnRemoveComment = () => {
 				alert(jqXHR.statusText + '(' + jqXHR.status + ')');
 			}
 		})
+	})
+}
+
+// 게시글 수정
+const fnModify = () => {
+	$('btn-modify').on('click', (evt) => {
+		location.href = '${contextPath}/blog/modifyBlog.do?blogNo=' + evt.target.dataset.blogNo;
+		// 해당 게시글의 blogNo값을 보내서 blogDto객체 데이터를 가져와서 write.jsp로 넘긴다.
+		
 	})
 }
 

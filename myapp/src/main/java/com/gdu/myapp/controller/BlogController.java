@@ -60,6 +60,11 @@ public class BlogController {
     return blogService.getBlogList(request);
   }
   
+  @PostMapping(value="/modifyBlog.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> modifyBlog(HttpServletRequest request) {
+    // 
+  }
+  
   // 조회수 업데이트
   @GetMapping("/updateHit.do")
   public String updateHit(@RequestParam int blogNo) {
