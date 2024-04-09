@@ -57,6 +57,12 @@ public class BlogController {
     return blogService.getBlogList(request);
   }
   
+  @GetMapping("/updateHit.do")
+  public String updateHit(@RequestParam int blogNo) {
+    blogService.updateHit(blogNo);
+    return "redirect:/blog/detail.do?blogNo=" + blogNo;
+  }
+  
   @GetMapping("/detail.do")
   public String detail(@RequestParam int blogNo, Model model) {
     model.addAttribute("blog", blogService.getBlogByNo(blogNo));
@@ -72,8 +78,12 @@ public class BlogController {
   
   @GetMapping(value="/comment/list.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> commentList(HttpServletRequest request) {
-    
     return ResponseEntity.ok(blogService.getCommentList(request));
+  }
+  
+  @PostMapping(value="/comment/registerReply.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> registerReply(HttpServletRequest request) {
+    return ResponseEntity.ok(Map.of("insertReplyCount", blogService.registerReply(request)));
   }
   
   

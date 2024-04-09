@@ -120,6 +120,14 @@ public class BlogServiceImpl implements BlogService {
                           , HttpStatus.OK);
   }
   
+  
+  @Override
+  public int updateHit(int blogNo) {
+    return blogMapper.updateHit(blogNo);
+  }
+  
+  
+  
   @Override
   public BlogDto getBlogByNo(int blogNo) {
     return blogMapper.getBlogByNo(blogNo);
@@ -177,6 +185,33 @@ public class BlogServiceImpl implements BlogService {
     
   }
   
+  
+  @Override
+  public int registerReply(HttpServletRequest request) {
+
+    // 요청 파라미터
+    String contents = request.getParameter("contents");
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    int groupNo = Integer.parseInt(request.getParameter("groupNo"));
+    
+    // UserDto 객체 생성
+    UserDto user = new UserDto();
+    user.setUserNo(userNo);
+    
+    // CommentDto 객체 생성
+    CommentDto reply = CommentDto.builder()
+                              .contents(contents)
+                              .blogNo(blogNo)
+                              .groupNo(groupNo)
+                              .user(user)
+                            .build();
+    
+    // DB에 저장하고 결과 반환
+    return blogMapper.insertReply(reply);
+  }
+  
+
   
   
   

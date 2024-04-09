@@ -20,6 +20,11 @@
   </div>
   
   <div>
+    <span>조회수</span>
+    <span>${blog.hit}</span>
+  </div>
+  
+  <div>
     <span>제목</span>
     <span>${blog.title}</span>
   </div>
@@ -120,6 +125,28 @@ const fnCommentList = () => {
 			  str += '(' + moment(comment.createDt).format('YYYY.MM.DD.') + ')';
 			  str += '</span>';
 			  str += '<div>' + comment.contents + '</div>';
+			  // 답글 버튼 (원글에만 답글 버튼이 생성됨)
+			  if(comment.depth === 0) {
+				  str += '<button type="button" class="btn btn-success btn-reply">답글</button>';
+			  }
+			  // 삭제 버튼 (내가 작성한 댓글에만 삭제 버튼이 생성됨)
+			  if(Number('${sessionScope.user.userNo}') === comment.user.userNo) {
+				  str += '<button type="button" class="btn btn-danger btn-remove" data-comment-no="' + comment.commentNo + '">삭제</button>';
+			  }
+			  /********************* 답글 입력 화면 *********************/
+			  if(comment.depth === 0) {
+  			  str += '<div>';
+  			  str += '  <form class="frm-reply">';
+  			  str += '    <input type="hidden" name="groupNo" value="' + comment.groupNo + '">';
+  			  str += '    <input type="hidden" name="blogNo" value="${blog.blogNo}">';
+  			  // comment 혹은 상세보기 blogNo 둘다 가능
+  			  str += '    <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">';
+  			  str += '    <textarea name="contents" placeholder="답글 입력"></textarea>';
+  			  str += '    <button type="button" class="btn btn-warning btn-register-reply">작성완료</button>';
+  			  str += '  </form>';
+  			  str += '</div>'
+			  }
+			  /**********************************************************/
 			  // 댓글 닫는 <div>
 			  str += '</div>';
 			  // 목록에 댓글 추가
@@ -134,9 +161,43 @@ const fnCommentList = () => {
 	})
 }
 
+const fnPaging = (p) => {
+	page = p;
+	fnCommentList();
+}
+
+const fnRegisterReply = () => {
+	$(document).on('click', '.btn-register-reply', (evt) => {
+		fnCheckSignin();
+		$.ajax({
+			type: 'POST',
+			url: '${contextPath}/blog/comment/registerReply.do',
+			data: $(evt.target).closest('.frm-reply').serialize(), 
+			dataType: 'json',
+			success: (resData) => {
+				if(resData.insertReplyCount === 1) {
+					alert('답글이 등록되었습니다.');
+					$(evt.target).prev().val(''); // button의 형제 요소 -> prev() 이용
+					fnCommentList();
+				} else {
+					alert('답글 등록이 실패했습니다.');
+				}
+			},
+			error: (jqXHR) => {
+				alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+			}
+		})
+	})
+}
+
+
+
 $('#contents').on('click', fnCheckSignin);
 fnRegisterComment();
 fnCommentList();
+fnRegisterReply();
+
+
 
 
 </script>

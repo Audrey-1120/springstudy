@@ -51,7 +51,7 @@ const fnGetBlogList = () => {
 	 success:(resData) => {  // resData = {"blogList": [], "totalPage": 10}
 		  totalPage = resData.totalPage;  // totalPage 값 가져와서 갱신.
 		  $.each(resData.blogList, (i, blog) => { // i : 인덱스, blog : 각 요소 가져오기
-			  let str = '<div class="blog" data-blog-no="' + blog.blogNo + '">';
+			  let str = '<div class="blog" data-blog-no="' + blog.blogNo + '" data-user-no="' + blog.user.userNo + '">';
 			  str += '<span>'+ blog.title + '</span>';
 			  str += '<span>'+ blog.user.email + '</span>';
 			  str += '<span>'+ blog.hit + '</span>';
@@ -100,10 +100,6 @@ const fnScrollHandler = () => {
 	      
 	    }, 500);
 	    
-	    
-	    
-
-	    
 	  })
 	  
 	}
@@ -112,9 +108,17 @@ const fnScrollHandler = () => {
 		$(document).on('click', '.blog', (evt) => {
 			
 			// <div class="blog"> 중 클릭 이벤트가 발생한 <div> : 이벤트 대상
-			// alert(evt.target.dataset.blogNo); === $(evt.target).data('blogNo');
+			// evt.target.dataset.blogNo === $(evt.target).data('blogNo');
+			// evt.target.dataset.userNo === $(evt.target).data('userNo');
 			
-			location.href = '${contextPath}/blog/detail.do?blogNo=' + evt.target.dataset.blogNo;
+			// 내가 작성한 블로그는 /detail.do 요청 (조회수 증가가 없음)
+			// 남이 작성한 블로그는 /updateHit.do 요청 (조회수 증가가 있음)
+			
+      if(Number(${sessionScope.user.userNo}) === evt.target.dataset.userNo) {
+    	  location.href = '${contextPath}/blog/detail.do?blogNo=' + evt.target.dataset.blogNo;
+      } else {
+    	  location.href = '${contextPath}/blog/updateHit.do?blogNo=' + evt.target.dataset.blogNo;
+      }			
 		})
 	}
 
