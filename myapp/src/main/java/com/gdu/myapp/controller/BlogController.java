@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.gdu.myapp.dto.BlogDto;
 import com.gdu.myapp.service.BlogService;
 import com.gdu.myapp.service.UserService;
 
@@ -60,10 +61,6 @@ public class BlogController {
     return blogService.getBlogList(request);
   }
   
-  @PostMapping(value="/modifyBlog.do", produces="application/json")
-  public ResponseEntity<Map<String, Object>> modifyBlog(HttpServletRequest request) {
-    // 
-  }
   
   // 조회수 업데이트
   @GetMapping("/updateHit.do")
