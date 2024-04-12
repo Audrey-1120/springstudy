@@ -1,13 +1,24 @@
 package com.gdu.myapp.service;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
@@ -191,10 +202,166 @@ public class UploadServiceImpl implements UploadService {
   }
   
   @Override
-  public void loadUploadList(int uploadNo, Model model) {
-    
-    model.addAttribute("uploadList", uploadMapper.getUploadByNo(uploadNo));
-    
+  public void loadUploadByNo(int uploadNo, Model model) {
+    model.addAttribute("upload", uploadMapper.getUploadByNo(uploadNo));
+    model.addAttribute("attachList", uploadMapper.getAttachList(uploadNo));
   }
+  
+  @Override
+  public ResponseEntity<Resource> download(HttpServletRequest request) {
+
+    // 첨부 파일 정보를 DB에서 가져오기
+    int attachNo = Integer.parseInt(request.getParameter("attachNo"));
+    AttachDto attach = uploadMapper.getAttachByNo(attachNo); // 첨부된 파일의 정보가 담겨 있음.
+    
+    // 첨부 파일 정보를 File 객체로 만든 뒤 Resource 객체로 변환
+    File file = new File(attach.getUploadPath(), attach.getFilesystemName());
+    Resource resource = new FileSystemResource(file);
+    
+    // 첨부 파일이 없으면 다운로드 취소
+    if(!resource.exists()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    // DOWNLOAD_COUNT 증가
+    uploadMapper.updateDownloadCount(attachNo);
+    
+    // 사용자가 다운로드 받을 파일명 결정 (originalFilename 을 브라우저에 따라 다르게 인코딩 처리)
+    String originalFilename = attach.getOriginalFileName();
+    // 요청 헤더의 userAgent값으로 해당 브라우저를 알 수 있다.
+    String userAgent = request.getHeader("UserAgent");
+    try {
+      // IE
+      if(userAgent.contains("Trident")) { // + 가 나오면 공백 문자열로 바꿔줌.
+        originalFilename = URLEncoder.encode(originalFilename, "UTF-8").replace("+", " "); 
+      }
+      // Edge
+      if(userAgent.contains("Edg")) {
+        originalFilename = URLEncoder.encode(originalFilename, "UTF-8");
+      }
+      // Other - 사파리, 크롬 등등...
+      else {
+        originalFilename = new String(originalFilename.getBytes("UTF-8"), "ISO-8859-1");
+      }
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    // 다운로드용 응답 헤더 설정 (HTTP 참조)
+    HttpHeaders responseHeader = new HttpHeaders();
+    responseHeader.add("Content-Type", "application/octet-stream");
+    responseHeader.add("Content-Disposition", "attachment; filename=" + originalFilename);
+    responseHeader.add("Content-Length", file.length() + "");
+    
+    
+    return new ResponseEntity<Resource>(resource, responseHeader, HttpStatus.OK);
+  }
+  
+  @Override
+  public ResponseEntity<Resource> downloadAll(HttpServletRequest request) {
+
+      
+    // 다운로드 할 모든 첨부파일들의 정보를 DB에서 가져오기
+    int uploadNo = Integer.parseInt(request.getParameter("uploadNo"));
+    List<AttachDto> attachList = uploadMapper.getAttachList(uploadNo);
+    
+    // 첨부 파일이 없으면 종료
+    if(attachList.isEmpty()) {
+      return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+    }
+    
+    // 임시 zip 파일 저장 경로
+    File tempDir = new File(myFileUtils.getTempPath());
+    if(!tempDir.exists()) {
+      tempDir.mkdirs();
+    }
+    
+    // 임시 zip 파일 이름
+    String tempFilename = myFileUtils.getTempFilename() + ".zip";
+    
+    // 임시 zip 파일 File 객체
+    File tempFile = new File(tempDir, tempFilename);
+    
+    // 만든 파일 명이 숫자로 되어있기 때문에 encoding 할 필요 없음.
+    
+    // 첨부파일들을 하나씩 zip 파일로 모으기
+    try {
+      
+      // ZipOutputStream 객체 생성
+      ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tempFile));
+      
+      for(AttachDto attach : attachList) {
+        
+        // zip 파일에 포함할 ZipEntry 객체 생성
+        ZipEntry zipEntry = new ZipEntry(attach.getOriginalFileName()); // Zip 파일에 들어갈 개별 파일 이름
+        
+        // zip 파일에 ZipEntry 객체 명단 추가 (파일의 이름만 등록한 상황)
+        zout.putNextEntry(zipEntry);
+        
+        // 실제 첨부파일을 zip 파일에 등록 (첨부 파일을 읽어서 zip 파일로 보냄)
+        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(attach.getUploadPath(), attach.getFilesystemName())));
+        zout.write(in.readAllBytes());
+        // ---- 여기까지가 읽어들이는 stream!!
+        
+        // 사용한 자원 정리
+        // in : 개별 첨부파일 읽어들인것
+        in.close();
+        zout.closeEntry();
+        
+        // 다운로드가 되었으니 다운로드 횟수 증가 DOWNLOAD_COUNT 증가
+        // DOWNLOAD_COUNT 증가
+        uploadMapper.updateDownloadCount(attach.getAttachNo());
+        
+        
+      } // for
+      
+      // zout 자원 반납
+      zout.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    // 다운로드 할 zip File 객체 -> Resource 객체
+    Resource resource = new FileSystemResource(tempFile);
+    
+    // 다운로드용 응답 헤더 설정 (HTTP 참조)
+    HttpHeaders responseHeader = new HttpHeaders();
+    responseHeader.add("Content-Type", "application/octet-stream");
+    responseHeader.add("Content-Disposition", "attachment; filename=" + tempFilename);
+    responseHeader.add("Content-Length", tempFile.length() + "");
+    
+    // 다운로드 진행
+    return new ResponseEntity<Resource>(resource, responseHeader, HttpStatus.OK);
+  }
+  
+  @Override
+  public void removeTempFiles() {
+
+    // 임시 폴더의 모든 파일 제거
+    File tempDir = new File(myFileUtils.getTempPath());
+    File[] tempFiles = tempDir.listFiles();
+    if(tempFiles != null) {
+      for(File tempFile : tempFiles) {
+        tempFile.delete();
+      }
+    }
+  }
+  
+  @Override
+  public UploadDto getUploadByNo(int uploadNo) {
+    return uploadMapper.getUploadByNo(uploadNo);
+  }
+  
+  @Override
+  public int modifyUpload(UploadDto upload) {
+    return uploadMapper.updateUpload(upload);
+  }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> getAttachList(int upload) {
+    return ResponseEntity.ok(Map.of("attachList", uploadMapper.getAttachList(upload)));
+  }
+  
 
 }

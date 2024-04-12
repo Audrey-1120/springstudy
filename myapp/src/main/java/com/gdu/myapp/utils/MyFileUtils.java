@@ -34,4 +34,19 @@ public class MyFileUtils {
     return UUID.randomUUID().toString().replace("-", "") + extName;
     // charSequence - String이라고 생각하면 됨.
   }
+  
+  // 아래는 zip 파일의 저장 경로와 이름이 될 것이다.
+  
+  // 임시 파일 경로 반환
+  public String getTempPath() {
+    return "/temporary";
+  }
+  
+  // 임시 파일 이름 반환 (확장자 제외)
+  public String getTempFilename() {
+    return System.currentTimeMillis() + "";
+  }
+  
+  
+  
 }

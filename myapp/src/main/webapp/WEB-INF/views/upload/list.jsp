@@ -89,17 +89,9 @@ const fnUploadInserted = () => {
 	}
 }
 
-const getUploadByNo = () => {
-	document.getElementById('uploadTitle').addEventListener('click', (evt) => {
-		console.log(evt.target.dataset.uploadNo);
-		// location.href='${contextPath}/upload/detail.do?uploadNo=' + evt.target.dataset.uploadNo;
-	})
-}
-
 fnDisplay();
 fnSort();
 fnUploadInserted();
-getUploadByNo();
 
 </script>
 
