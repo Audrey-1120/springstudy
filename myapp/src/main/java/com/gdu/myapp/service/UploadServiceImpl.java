@@ -314,7 +314,7 @@ public class UploadServiceImpl implements UploadService {
         uploadMapper.updateDownloadCount(attach.getAttachNo());
         
         
-      } // for
+      }
       
       // zout 자원 반납
       zout.close();
@@ -359,8 +359,34 @@ public class UploadServiceImpl implements UploadService {
   }
   
   @Override
-  public ResponseEntity<Map<String, Object>> getAttachList(int upload) {
-    return ResponseEntity.ok(Map.of("attachList", uploadMapper.getAttachList(upload)));
+  public ResponseEntity<Map<String, Object>> getAttachList(int uploadNo) {
+    return ResponseEntity.ok(Map.of("attachList", uploadMapper.getAttachList(uploadNo)));
+  }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> removeAttach(int attachNo) {
+
+    // 삭제할 첨부 파일 정보를 DB 에서 가져오기
+    AttachDto attach = uploadMapper.getAttachByNo(attachNo);
+    
+    // 파일 삭제
+    File file = new File(attach.getUploadPath(), attach.getFilesystemName());
+    if(file.exists()) {
+      file.delete();
+    }
+    
+    // 썸네일 삭제
+    if(attach.getHasThumbnail() == 1) {
+      File thumbnail = new File(attach.getUploadPath(), "s_" + attach.getFilesystemName());
+      if(thumbnail.exists()) {
+        thumbnail.delete();
+      }
+    }
+    
+    // DB 삭제
+    int deleteCount = uploadMapper.deleteAttach(attachNo);
+    
+    return ResponseEntity.ok(Map.of("deleteCount", deleteCount));
   }
   
 

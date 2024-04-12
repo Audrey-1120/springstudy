@@ -20,5 +20,6 @@ public interface UploadService {
   void removeTempFiles();
   UploadDto getUploadByNo(int uploadNo);
   int modifyUpload(UploadDto upload);
-  ResponseEntity<Map<String, Object>> getAttachList(int upload);
+  ResponseEntity<Map<String, Object>> getAttachList(int uploadNo);
+  ResponseEntity<Map<String, Object>> removeAttach(int attachNo);
 }
